@@ -1,0 +1,25 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.superpowers/
+.ipynb_checkpoints/
+.DS_Store
+
+# Data caches — large, regeneratable from API
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Local notebooks (work in progress)
+notebooks/*.ipynb
+notebooks/*.png
+
+# Generated chart artefacts outside the deployable static site
+charts/**/*.png
+
+# Keep static-site chart assets committed for GitHub Pages
+!site/charts/**/*.png
