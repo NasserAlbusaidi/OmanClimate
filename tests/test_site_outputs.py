@@ -16,6 +16,7 @@ def test_static_site_wires_phase4_and_phase5_data():
     assert "1980-present fit window" in html
     assert "Methodology</a> — data sources" not in html
     assert "link TBD" not in html
+    assert 'href="https://github.com/"' not in html
     assert 'href="https://github.com/NasserAlbusaidi/OmanClimate"' in html
     assert 'property="og:title" content="Oman Climate Atlas"' in html
     assert 'property="og:image" content="https://nasseralbusaidi.github.io/OmanClimate/social-preview.png"' in html
@@ -35,6 +36,10 @@ def test_static_site_wires_phase4_and_phase5_data():
     assert 'src="sst-data.js"' in html
     assert 'id="personal-climate"' in html
     assert 'id="story-signals"' in html
+    assert "Story Leads" in html
+    assert "Metric summaries, not finished story pages" not in html
+    assert "Muscat / Seeb" not in html
+    assert "Muscat (Seeb station)" in html
     assert 'id="sea-of-oman-sst"' in html
     assert "OMAN_PERSONAL_CLIMATE_DATA" in html
     assert "OMAN_STORY_METRICS_DATA" in html

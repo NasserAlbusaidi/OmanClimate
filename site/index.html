@@ -568,7 +568,7 @@
         </div>
         <div>
           <dt>Stations</dt>
-          <dd>6 ERA5 grid cells</dd>
+          <dd>6 ERA5 grid cells, including Muscat (Seeb station)</dd>
         </div>
         <div>
           <dt>Temporal base</dt>
@@ -674,8 +674,8 @@
 
   <section class="atlas-section" id="story-signals" aria-labelledby="story-signals-title">
     <div class="atlas-header">
-      <h2 id="story-signals-title">Story Signals</h2>
-      <p class="detail-meta">Metric summaries, not finished story pages.</p>
+      <h2 id="story-signals-title">Story Leads</h2>
+      <p class="detail-meta">Story leads selected from measured signals, with the caveat shown beside the claim.</p>
     </div>
     <div id="story-signal-cards" class="signal-grid" aria-live="polite"></div>
   </section>
@@ -709,7 +709,7 @@
   </figure>
 
   <h2>Station Comparisons</h2>
-  <p>ERA5/Open-Meteo annual summaries for Muscat / Seeb, Salalah, Sohar, Sur, Nizwa, and Saiq. All station trends use the same post-1980 fit window and the same full-year filter.</p>
+  <p>ERA5/Open-Meteo annual summaries for Muscat, Salalah, Sohar, Sur, Nizwa, and Saiq. All station trends use the same post-1980 fit window and the same full-year filter.</p>
 
   <figure>
     <img src="charts/stations/annual_mean_temp_by_station.png" alt="Small-multiple line charts of annual mean temperature for six Oman stations">
@@ -727,8 +727,8 @@
   </figure>
 
   <figure>
-    <img src="charts/stations/muscat_saiq_comparison.png" alt="Three-panel comparison of Muscat / Seeb and Saiq annual mean temperature, tropical nights, and wet-bulb hours">
-    <figcaption><strong>Muscat / Seeb vs Saiq.</strong> Saiq is a mountain/refuge comparator, not a controlled rural twin for Muscat. Differences mix elevation, coast, and urban context.</figcaption>
+    <img src="charts/stations/muscat_saiq_comparison.png" alt="Three-panel comparison of Muscat and Saiq annual mean temperature, tropical nights, and wet-bulb hours">
+    <figcaption><strong>Muscat vs Saiq.</strong> Saiq is a mountain/refuge comparator, not a controlled rural twin for Muscat. Differences mix elevation, coast, and urban context.</figcaption>
   </figure>
 
   <h2>Diagnostics</h2>
@@ -837,6 +837,11 @@
         return `p=${value.toFixed(3)}`;
       }
 
+      function displayStationLabel(station) {
+        if (!station) return "";
+        return station.slug === "muscat" ? "Muscat" : station.label;
+      }
+
       function setButtonState() {
         buttons.forEach((button) => {
           button.setAttribute("aria-pressed", String(button.dataset.metric === activeMetric));
@@ -865,7 +870,7 @@
         const trend = station.trends[activeMetric];
         detail.innerHTML = `
           <p class="detail-kicker">${station.category}</p>
-          <h3>${station.label}</h3>
+          <h3>${displayStationLabel(station)}</h3>
           <p class="detail-meta">${station.latitude.toFixed(3)}, ${station.longitude.toFixed(3)} · latest full year ${station.latest_year}</p>
           <div class="metric-readout">
             <span class="value">${formatValue(activeMetric, station.latest[activeMetric])}</span>
@@ -902,7 +907,7 @@
           if (station.slug !== activeSlug) marker.classList.add("is-muted");
           marker.setAttribute("tabindex", "0");
           marker.setAttribute("role", "button");
-          marker.setAttribute("aria-label", `${station.label}: ${formatValue(activeMetric, value)}`);
+          marker.setAttribute("aria-label", `${displayStationLabel(station)}: ${formatValue(activeMetric, value)}`);
           marker.dataset.slug = station.slug;
 
           const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -915,7 +920,7 @@
           const [dx, dy] = labelOffsets[station.slug] || [12, -12];
           label.setAttribute("x", x + dx);
           label.setAttribute("y", y + dy);
-          label.textContent = station.label.replace(" / Seeb", "");
+          label.textContent = displayStationLabel(station);
 
           marker.append(circle, label);
           marker.addEventListener("pointerenter", () => selectStation(station.slug));
@@ -1090,7 +1095,7 @@
             title: "Mean temperature",
             value: formatMetricDelta("temp_mean_c", temp.average),
             meta: temp.largest
-              ? `Largest station change: ${temp.largest.station.label}, ${formatMetricDelta("temp_mean_c", temp.largest.delta)}.`
+              ? `Largest station change: ${displayStationLabel(temp.largest.station)}, ${formatMetricDelta("temp_mean_c", temp.largest.delta)}.`
               : "No station comparison available.",
           },
           {
@@ -1099,7 +1104,7 @@
             title: "Tropical nights",
             value: formatMetricDelta("tropical_nights", nights.average),
             meta: nights.largest
-              ? `Largest rise: ${nights.largest.station.label}, ${formatMetricDelta("tropical_nights", nights.largest.delta)}.`
+              ? `Largest rise: ${displayStationLabel(nights.largest.station)}, ${formatMetricDelta("tropical_nights", nights.largest.delta)}.`
               : "No station comparison available.",
           },
           {
@@ -1107,7 +1112,7 @@
             title: "Wet-bulb danger hours",
             value: wetbulb.largest ? formatMetricDelta("wetbulb_hours_above_28", wetbulb.largest.delta) : "n/a",
             meta: wetbulb.largest
-              ? `${wetbulb.largest.station.label}; catalog average ${formatMetricDelta("wetbulb_hours_above_28", wetbulb.average)}.`
+              ? `${displayStationLabel(wetbulb.largest.station)}; catalog average ${formatMetricDelta("wetbulb_hours_above_28", wetbulb.average)}.`
               : "No station comparison available.",
           },
           {
@@ -1115,7 +1120,7 @@
             title: "Longest summer run",
             value: formatMetricDelta("summer_length_days", summer.average),
             meta: summer.largest
-              ? `Largest station change: ${summer.largest.station.label}, ${formatMetricDelta("summer_length_days", summer.largest.delta)}.`
+              ? `Largest station change: ${displayStationLabel(summer.largest.station)}, ${formatMetricDelta("summer_length_days", summer.largest.delta)}.`
               : "No station comparison available.",
           },
           {
@@ -1146,7 +1151,7 @@
         const container = document.getElementById("station-change-cards");
         const station = stationBySlug(stationSlug);
         if (!container || !station) return;
-        if (title) title.textContent = `Selected station: ${station.label}`;
+        if (title) title.textContent = `Selected station: ${displayStationLabel(station)}`;
         container.innerHTML = personalData.metrics.map((metric) => {
           const start = metricValue(station, metric.key, startYear);
           const latest = metricValue(station, metric.key, personalData.latest_year);
@@ -1173,7 +1178,7 @@
           </div>
           <div class="console-row">
             <span class="console-label">Station source</span>
-            <span class="console-value">Open-Meteo ERA5 hourly archive; ${station.label} grid cell.</span>
+            <span class="console-value">Open-Meteo ERA5 hourly archive; ${displayStationLabel(station)} grid cell.</span>
           </div>
           <div class="console-row">
             <span class="console-label">Aggregation</span>
@@ -1274,7 +1279,7 @@
             y: yScale(last.delta) + 4,
             fill: color,
           }));
-          chart.lastChild.textContent = row.station.label.replace(" / Seeb", "");
+          chart.lastChild.textContent = displayStationLabel(row.station);
         });
 
         const hoverLine = svgEl("line", {
@@ -1329,7 +1334,7 @@
                 .map((row) => `
                   <div class="tooltip-row">
                     <span class="tooltip-swatch" style="background:${changeSeriesColors[row.station.slug] || "#151a1f"}"></span>
-                    <span>${row.station.label}</span>
+                    <span>${displayStationLabel(row.station)}</span>
                     <strong>${formatMetricDelta(activeChangeMetric, row.point.delta)}</strong>
                   </div>
                 `).join("")}
@@ -1353,7 +1358,7 @@
         if (!yearRange || !yearInput || !stationSelect || !titleYear) return;
 
         stationSelect.innerHTML = personalData.stations.map((station) =>
-          `<option value="${station.slug}">${station.label}</option>`
+          `<option value="${station.slug}">${displayStationLabel(station)}</option>`
         ).join("");
         stationSelect.value = "muscat";
         yearRange.min = personalData.fit_start_year;
@@ -1413,7 +1418,7 @@
         if (!stationSelect || !yearRange || !yearInput || !results || !note) return;
 
         stationSelect.innerHTML = personalData.stations.map((station) =>
-          `<option value="${station.slug}">${station.label}</option>`
+          `<option value="${station.slug}">${displayStationLabel(station)}</option>`
         ).join("");
         yearRange.min = personalData.fit_start_year;
         yearRange.max = personalData.latest_year;
