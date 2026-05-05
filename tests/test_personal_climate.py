@@ -102,3 +102,5 @@ def test_write_personal_climate_data_emits_local_site_js(tmp_path: Path):
     )
     assert data["stations"][0]["slug"] == "muscat"
     assert data["metrics"][0]["key"] == "temp_mean_c"
+    nights = next(metric for metric in data["metrics"] if metric["key"] == "tropical_nights")
+    assert nights["label"] == "30°C nights"

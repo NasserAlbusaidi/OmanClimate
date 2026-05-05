@@ -1,6 +1,6 @@
 # Methodology
 
-> Living document. Renders as `/methodology` on the site once the frontend lands (Phase 2+). Update with every meaningful change to data, thresholds, or analysis. Last updated: 2026-05-04.
+> Living document. Renders as `/methodology` on the site once the frontend lands (Phase 2+). Update with every meaningful change to data, thresholds, or analysis. Last updated: 2026-05-05.
 
 ## What this project is and is not
 
@@ -30,6 +30,7 @@ This document. It exists before any visualization does. It is updated as the pro
 | Open-Meteo Archive API | hourly weather for the configured Oman ERA5 station catalog | 1940-01-01 → present | ERA5-backed reanalysis from 1940 to ~5 days ago, blended with the ECMWF IFS forecast for the very recent tail. Free, no auth. Legacy Muscat cache files remain in `data/raw/open-meteo/`; Phase 3 station caches live in `data/raw/open-meteo/{station_slug}/`. |
 | NOAA NCEI GHCN-Daily | station daily observations for Seeb International (`MUM00041256`, WMO `41256`) | 1983 → 2025 in the current NOAA inventory for TAVG/TMAX/TMIN | Pulled from NOAA's GHCN-Daily `by_station` archive as `data/raw/ghcn/MUM00041256.csv.gz`. The originally requested `OMM00041256` is treated as an alias; NOAA's station metadata lists Seeb under the FIPS-prefixed GHCN ID `MUM00041256`. Processed to `data/processed/muscat_ghcn_daily.parquet` and `data/processed/muscat_ghcn_annual.parquet`. Used as an observational cross-check against the ERA5-shaped series, not as a drop-in replacement for hourly reanalysis. |
 | NOAA OISST v2.1 via NOAA PSL THREDDS NCSS | monthly Sea of Oman sea-surface temperature context | 1982 → present for annual summaries | NOAA's 0.25° daily OISST starts on 1981-09-01; this project uses NOAA's monthly mean OISST file derived from that daily product. It fetches a regional NetCDF subset for north 26.5, south 22.0, west 56.0, east 61.0 and starts annual claims in 1982 because 1981 is incomplete. |
+| Oman Civil Aviation Authority station records | planned local validation layer for original station observations | pending access | These records are the highest-authority source for original Oman station observations. They will be used to validate the current ERA5/Open-Meteo atlas, not to replace the atlas backbone unless coverage, licensing, and variable frequency support a later source change. Raw local station files stay out of Git unless redistribution is explicitly permitted. |
 
 The station catalog is defined once in `pipeline/stations.py`:
 
@@ -66,7 +67,7 @@ This difference matters when comparing ERA5 and GHCN. ERA5 annual means here are
 | `hours_above_30 / 35 / 40` | count of hourly samples with temperature **strictly greater than** 30 / 35 / 40 °C — equality is excluded |
 | `wet_bulb_max` | maximum hourly wet-bulb temperature in the local day, computed via the Stull (2011) empirical formula |
 | `hours_wetbulb_above_28` | count of hourly samples with wet-bulb **strictly greater than** 28 °C — a threshold associated with elevated heat-stroke risk for healthy adults during exertion |
-| `days_overnight_low_above_30` | per year, count of days where `temp_low` > 30 °C — a proxy for "nights when bodies cannot recover from daytime heat" |
+| `days_overnight_low_above_30` | per year, count of days where `temp_low` > 30 °C. Standard "tropical night" definitions use `temp_low` > 20 °C; in Muscat that threshold is close to year-round, so this atlas uses >30 °C lows as the heat-stress signal. |
 | `summer_length` | per year, the longest consecutive run of days with `temp_high` > 35 °C. Runs do not span calendar-year boundaries. |
 | `summer_start` / `summer_end` | first and last calendar dates of the year's longest `temp_high > 35 °C` run. Both null when no day qualifies. Earlier-starting summers are a recognised climate fingerprint, which is why these two columns are exposed even though `summer_length` already captures the duration. |
 | `heatwaves_3day_above_35` | per year, count of distinct **maximal** runs of ≥ 3 consecutive days with `temp_high` > 35 °C ("mild" heatwaves). One six-day stretch counts as one heatwave, not two. |
@@ -125,16 +126,16 @@ Adam (22.379 °N, 57.532 °E) is an interior Oman town ≈170 km inland on the g
 
 - **The pre-1980 U-shape appears in Adam too.** The artifact is regional reanalysis instability, not a Muscat-specific UHI thing. This is the most important confirmation: it tells us the cut at 1980 is justified for *both* coastal and interior Oman, not just for Seeb's grown-up airport.
 - **Adam runs hotter than Muscat in mean temperature** (interior vs coastal — the sea moderates Muscat). The UHI question at Seeb is not "is Muscat warmer than rural?" — it isn't — but "has the gap *narrowed* over time as Muscat urbanised?" The post-2000 Muscat–Adam gap in mean temperature is roughly stable, which suggests UHI at Seeb is real but modest at the resolution ERA5 provides; the regional climate signal dominates.
-- **Tropical nights:** Muscat sees 25–80 nights/yr where the low never drops below 30 °C; Adam sees ≈0. This is a real coastal-climate fingerprint, not urbanisation — interior desert nights cool reliably even as days are blistering.
+- **30 °C nights:** Muscat sees 25–80 nights/yr where the low never drops below 30 °C; Adam sees ≈0. This is a real coastal-climate fingerprint, not urbanisation — interior desert nights cool reliably even as days are blistering.
 - **Wet-bulb hours > 28 °C:** Muscat hits ~600 h in 2024; Adam hits *zero* across the entire record. This is decisive evidence that Muscat's humid-heat trend is a coastal, sea-surface-temperature-driven climate signal, not an artifact and not urbanisation. **It is currently the most defensible single finding in the project.**
 
 ## Phase 4 and Phase 5 derived analytics
 
 Personal climate comparisons use only years with `n_days >= 360` and `year >= 1980`. A selected birth year compares that year's value with the latest full year in the station annual parquet. The parent-generation baseline is exactly 30 years earlier. When that baseline would fall before 1980, the comparison is marked unavailable rather than computed from the untrusted early ERA5 window.
 
-The personal panel exposes annual mean temperature, tropical nights, wet-bulb hours above 28 °C, longest summer run, and severe heatwave counts. These all come from `data/processed/oman_stations_annual.parquet`.
+The personal panel exposes annual mean temperature, 30 °C nights, wet-bulb hours above 28 °C, longest summer run, and severe heatwave counts. These all come from `data/processed/oman_stations_annual.parquet`.
 
-Story signal cards are metric summaries, not finished narrative pages. December cool-snap metrics use `data/processed/stations/muscat_daily.parquet`, where a December cool day means `temp_high < 25 °C`. Khareef stress metrics use `data/processed/stations/salalah_daily.parquet` for June through September and prioritize wet-bulb hours above 28 °C. The mountain-refuge metric compares Saiq with coastal Muscat and Sohar using tropical nights and humid-heat exposure.
+Story leads are short, data-backed summaries that can become narrative pages. December cool-snap metrics use `data/processed/stations/muscat_daily.parquet`, where a December cool day means `temp_high < 25 °C`. Khareef stress metrics use `data/processed/stations/salalah_daily.parquet` for June through September and prioritize wet-bulb hours above 28 °C. The mountain-refuge metric compares Saiq with coastal Muscat and Sohar using 30 °C nights and humid-heat exposure.
 
 ## Phase 6 Sea of Oman SST context
 
@@ -147,17 +148,17 @@ Annual SST summaries begin in 1982. OISST v2.1 starts on 1981-09-01, so 1981
 is not a complete annual comparison year. The anomaly baseline is 1982-2011.
 
 The first SST analysis compares `sst_may_oct_mean` with Muscat and Sohar
-wet-bulb hours, coastal tropical nights, and Salalah June-September wet-bulb
+wet-bulb hours, coastal 30 °C nights, and Salalah June-September wet-bulb
 hours. It reports same-year and one-year-lag Pearson correlations. These are
 association tests: they can show whether the shapes move together, but they do
 not prove that SST caused the humid-heat trend.
 
 ## What this project does not (yet) account for
 
-- **Cross-validation beyond Seeb station observations.** GHCN-Daily now gives one observational cross-check at Seeb International. NASA POWER is still a useful independent gridded cross-check and remains on the roadmap. Sea of Oman SST now provides contextual association tests for coastal humid heat, but it is not an independent air-temperature validation source.
+- **Cross-validation beyond Seeb station observations.** GHCN-Daily now gives one observational cross-check at Seeb International. Original Oman Civil Aviation Authority station records are the preferred next validation layer when available. NASA POWER remains a useful independent gridded cross-check. Sea of Oman SST provides contextual association tests for coastal humid heat, but it is not an independent air-temperature validation source.
 - **The 2015 boundary.** The +0.98 °C step at 2015 (p < 1 × 10⁻⁴) is consistent with both real Gulf climate acceleration and an ERA5 / ERA5T handover discontinuity. Cannot be disambiguated from a single source.
 - **Microclimate within Muscat.** Open-Meteo serves a single grid cell per coordinate. Mutrah, Qurum, Bawshar, and Seeb all behave differently in reality. We use the Seeb-area cell as the Muscat reference.
-- **Diurnal asymmetry in trends.** Daily mean conceals the fact that nights warm faster than days in many regions. Tropical-nights chart partly captures this; a dedicated diurnal-asymmetry analysis is future work.
+- **Diurnal asymmetry in trends.** Daily mean conceals the fact that nights warm faster than days in many regions. The 30 °C nights chart partly captures this; a dedicated diurnal-asymmetry analysis is future work.
 - **Controlled rural twin for Muscat.** Saiq is useful because it asks whether a mountain refuge is warming too, but it does not isolate urbanisation by itself. A better UHI-specific design would compare multiple coastal urban and non-urban grid cells with similar elevation and sea exposure.
 
 ## Reproducibility
@@ -173,7 +174,7 @@ not prove that SST caused the humid-heat trend.
 ## Changelog
 
 - **2026-05-02** — initial methodology page; Phase 1 (Muscat data pipeline) shipped.
-- **2026-05-02** — Phase 2 ("feel it" charts) shipped. `annual.parquet` schema extended with `summer_start`, `summer_end`, `heatwaves_3day_above_35`, `heatwaves_5day_above_40`. Four charts rendered to `charts/`: threshold hours, tropical nights, summer season (length / start / end), heatwave counts. Trend bands (OLS 95 % CI), Theil–Sen cross-check, and Mann–Kendall p-values now mandatory on every trend chart via `pipeline/viz/trend.py:plot_with_trend`. Heatwave thresholds (mild ≥3 days > 35 °C, severe ≥5 days > 40 °C) are placeholders documented above and easy to revise.
+- **2026-05-02** — Phase 2 ("feel it" charts) shipped. `annual.parquet` schema extended with `summer_start`, `summer_end`, `heatwaves_3day_above_35`, `heatwaves_5day_above_40`. Four charts rendered to `charts/`: threshold hours, 30 °C nights, summer season (length / start / end), heatwave counts. Trend bands (OLS 95 % CI), Theil–Sen cross-check, and Mann–Kendall p-values now mandatory on every trend chart via `pipeline/viz/trend.py:plot_with_trend`. Heatwave thresholds (mild ≥3 days > 35 °C, severe ≥5 days > 40 °C) are placeholders documented above and easy to revise.
 - **2026-05-02** — Phase 2.5 (data-quality diagnostics). Discovered a U-shape in the 1940→2025 series that is incompatible with monotonic climate warming. Implemented `pipeline/diagnostics/{windows,step_changes,rural}.py` and `pipeline/viz/diagnostics.py`. Step-change tests located the artifact at the 1950 boundary (Δ = −1.10 °C, p < 1e-6) and confirmed cleanliness at 1979 (p = 0.11). Window-stress test showed five of ten metrics flip slope sign between full and post-1979 windows. Adam (rural Oman comparator) shows the same pre-1980 U-shape, confirming the artifact is regional reanalysis instability rather than urbanisation. **Decision:** all published trend charts now fit on `year ≥ 1980` only, with pre-1980 points still drawn in muted style so the cut is visible. Wet-bulb-hours signal at Muscat is unchanged by the cut, *and* is absent in rural Adam — a robust coastal-climate finding.
 - **2026-05-03** — Added NOAA NCEI GHCN-Daily as a second source for Seeb International (`MUM00041256`, WMO `41256`; `OMM00041256` accepted as an alias). New source modules: `pipeline/fetch/ghcn.py`, `pipeline/process/ghcn.py`, and common annual overlay schema in `pipeline/process/common_schema.py`. The comparison notebook is `notebooks/compare_era5_ghcn.py`.
 - **2026-05-03** — Phase 3 station workflow started. Added the canonical station catalog (`pipeline/stations.py`), station-aware Open-Meteo cache folders, `fetch-stations`, `process-stations`, and `chart-stations` CLI commands, Makefile targets, per-station parquet outputs under `data/processed/stations/`, combined annual output at `data/processed/oman_stations_annual.parquet`, and Phase 3 small-multiple chart renderers.

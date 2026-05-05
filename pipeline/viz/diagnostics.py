@@ -28,7 +28,7 @@ def render_window_comparison(annual_parquet: Path, out_path: Path) -> None:
     metrics = [
         ("hours_above_35_sum", "hours > 35 °C", PALETTE["above_35"]),
         ("hours_wetbulb_above_28_sum", "hours wet-bulb > 28 °C", PALETTE["wetbulb_above_28"]),
-        ("days_overnight_low_above_30", "tropical nights", PALETTE["tropical_nights"]),
+        ("days_overnight_low_above_30", "30 °C nights", PALETTE["tropical_nights"]),
         ("heatwaves_5day_above_40", "severe heatwaves (≥5d > 40 °C)", PALETTE["heatwave_severe"]),
     ]
 
@@ -92,7 +92,7 @@ def render_first_differences(annual_parquet: Path, out_path: Path) -> None:
     metrics = [
         ("temp_mean_mean", "Δ annual mean temp"),
         ("hours_above_35_sum", "Δ hours > 35 °C"),
-        ("days_overnight_low_above_30", "Δ tropical nights"),
+        ("days_overnight_low_above_30", "Δ 30 °C nights"),
         ("hours_wetbulb_above_28_sum", "Δ hours wet-bulb > 28"),
     ]
 
@@ -144,7 +144,7 @@ def render_urban_rural_compare(
     metrics = [
         ("temp_mean_mean", "annual mean temperature (°C)"),
         ("hours_above_35_sum", "hours > 35 °C"),
-        ("days_overnight_low_above_30", "tropical nights (low > 30 °C)"),
+        ("days_overnight_low_above_30", "30 °C nights (low > 30 °C)"),
         ("hours_wetbulb_above_28_sum", "hours wet-bulb > 28 °C"),
     ]
 

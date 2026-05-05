@@ -24,12 +24,12 @@ def render(annual_parquet: Path, out_path: Path) -> None:
         ax,
         full["year"].to_numpy(),
         full["days_overnight_low_above_30"].to_numpy(),
-        label="nights where low > 30 °C",
+        label="30 °C nights",
         color=PALETTE["tropical_nights"],
         min_fit_year=TRUSTWORTHY_FIT_START,
     )
 
-    ax.set_title("Muscat — tropical nights per year (overnight low > 30 °C)")
+    ax.set_title("Muscat — 30 °C nights per year (overnight low > 30 °C)")
     ax.set_xlabel("year")
     ax.set_ylabel("days")
     ax.legend(loc="upper left", fontsize=9)

@@ -13,7 +13,7 @@ window.OMAN_PERSONAL_CLIMATE_DATA = {
     {
       "format": "integer",
       "key": "tropical_nights",
-      "label": "Tropical nights",
+      "label": "30\u00b0C nights",
       "unit": "days"
     },
     {

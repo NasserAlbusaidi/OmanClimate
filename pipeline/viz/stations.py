@@ -96,8 +96,8 @@ def render_tropical_nights(annual_parquet: Path, out_path: Path) -> None:
         annual_parquet,
         out_path,
         metric="days_overnight_low_above_30",
-        label="nights low > 30 deg C",
-        title="Oman ERA5 stations - tropical nights",
+        label="30 deg C nights",
+        title="Oman ERA5 stations - 30 deg C nights",
         ylabel="days",
         color=PALETTE["tropical_nights"],
     )
@@ -121,7 +121,7 @@ def render_muscat_saiq_comparison(annual_parquet: Path, out_path: Path) -> None:
 
     metrics = [
         ("temp_mean_mean", "annual mean temp", "deg C"),
-        ("days_overnight_low_above_30", "tropical nights", "days"),
+        ("days_overnight_low_above_30", "30 deg C nights", "days"),
         ("hours_wetbulb_above_28_sum", "wet-bulb hours > 28 deg C", "hours"),
     ]
     colors = {"muscat": PALETTE["above_40"], "saiq": PALETTE["summer_start"]}

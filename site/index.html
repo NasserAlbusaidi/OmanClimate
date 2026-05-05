@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Oman Climate Atlas">
 <meta property="og:title" content="Oman Climate Atlas">
-<meta property="og:description" content="What changed since 1980? Long-term heat, tropical-night, humid-heat, station, and Sea of Oman SST signals.">
+<meta property="og:description" content="What changed since 1980? Long-term heat, 30°C-night, humid-heat, station, and Sea of Oman SST signals.">
 <meta property="og:url" content="https://nasseralbusaidi.github.io/OmanClimate/">
 <meta property="og:image" content="https://nasseralbusaidi.github.io/OmanClimate/social-preview.png">
 <meta property="og:image:width" content="1200">
@@ -64,6 +64,13 @@
     letter-spacing: 0;
   }
   .lead { color: var(--muted); margin-top: 0; max-width: 760px; }
+  .site-byline {
+    margin: 0.75rem 0 0;
+    color: var(--ink);
+    font-family: "SF Mono", "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
   .method-note {
     margin: 1.2rem 0 0;
     background: rgba(255, 253, 248, 0.82);
@@ -560,6 +567,7 @@
       <div>
         <h1>Oman Climate Atlas</h1>
         <p class="lead">Long-term heat signals across Oman, derived from Open-Meteo's ERA5-backed reanalysis and checked against Seeb station observations where available. Trends use uncertainty bands, diagnostics, and documented caveats.</p>
+        <p class="site-byline">By Nasser Albusaidi | Last updated 2026-05-05</p>
       </div>
       <dl class="hero-meta-grid">
         <div>
@@ -583,7 +591,7 @@
   </header>
 
   <p class="method-note">
-    <strong>About the 1980 cut.</strong> Pre-1980 data is drawn here for transparency but excluded from trend fits. Step-change tests show ERA5 reanalysis instability before 1950 (Δ = −1.10 °C between 1940s and 1950s, p < 1e-6 — climate doesn't move that fast) and the artifact persists, in muted form, through to 1979. The same U-shape appears in a rural inland comparator (Adam), confirming this is reanalysis behaviour, not urbanisation. <a href="charts/diagnostics/window_comparison.png">See the diagnostic charts below.</a>
+    <strong>About the 1980 cut.</strong> Pre-1980 data is drawn here for transparency but excluded from trend fits. Step-change tests show ERA5 reanalysis instability before 1950 (Δ = −1.10 °C between 1940s and 1950s, p < 1e-6 — climate doesn't move that fast) and the artifact persists, in muted form, through to 1979. The same U-shape appears in a rural inland comparator (Adam), confirming this is reanalysis behaviour, not urbanisation. <a href="#diagnostics">See the diagnostics section below.</a>
   </p>
 
   <section class="atlas-section change-hero" id="what-changed" aria-labelledby="what-changed-title">
@@ -616,7 +624,7 @@
           <h3>Station change by year</h3>
           <div class="metric-tabs change-metric-tabs" role="group" aria-label="Change chart metric">
             <button type="button" data-change-metric="temp_mean_c" aria-pressed="false">Mean temp</button>
-            <button type="button" data-change-metric="tropical_nights" aria-pressed="true">Tropical nights</button>
+            <button type="button" data-change-metric="tropical_nights" aria-pressed="true">30°C nights</button>
             <button type="button" data-change-metric="wetbulb_hours_above_28" aria-pressed="false">Wet-bulb hours</button>
           </div>
         </div>
@@ -637,7 +645,7 @@
       <h2 id="station-atlas-title">Station Atlas</h2>
       <div class="metric-tabs" role="group" aria-label="Station map metric">
         <button type="button" data-metric="temp_mean_c" aria-pressed="false">Mean temp</button>
-        <button type="button" data-metric="tropical_nights" aria-pressed="false">Tropical nights</button>
+        <button type="button" data-metric="tropical_nights" aria-pressed="false">30°C nights</button>
         <button type="button" data-metric="wetbulb_hours_above_28" aria-pressed="true">Wet-bulb hours</button>
       </div>
     </div>
@@ -694,8 +702,8 @@
   </figure>
 
   <figure>
-    <img src="charts/tropical_nights.png" alt="Line chart of Muscat annual tropical nights where the daily low stayed above 30 °C">
-    <figcaption><strong>Tropical nights per year.</strong> Days where the overnight low never dropped below 30 °C. Overnight is when bodies recover from daytime heat; when nights stop cooling, that's when heat kills people. <span class="caveat">Same UHI caveat applies.</span></figcaption>
+    <img src="charts/tropical_nights.png" alt="Line chart of Muscat annual 30°C nights where the daily low stayed above 30 °C">
+    <figcaption><strong>30°C nights per year.</strong> Days where the overnight low never dropped below 30 °C. The standard tropical-night threshold is &gt;20 °C; in Muscat that is close to year-round, so this atlas tracks &gt;30 °C lows as the heat-stress signal. <span class="caveat">Same UHI caveat applies.</span></figcaption>
   </figure>
 
   <figure>
@@ -717,8 +725,8 @@
   </figure>
 
   <figure>
-    <img src="charts/stations/tropical_nights_by_station.png" alt="Small-multiple line charts of tropical nights for six Oman stations">
-    <figcaption><strong>Tropical nights by station.</strong> Days where the daily low stayed above 30 °C, faceted across the Phase 3 station catalog.</figcaption>
+    <img src="charts/stations/tropical_nights_by_station.png" alt="Small-multiple line charts of 30°C nights for six Oman stations">
+    <figcaption><strong>30°C nights by station.</strong> Days where the daily low stayed above 30 °C, faceted across the Phase 3 station catalog.</figcaption>
   </figure>
 
   <figure>
@@ -727,11 +735,11 @@
   </figure>
 
   <figure>
-    <img src="charts/stations/muscat_saiq_comparison.png" alt="Three-panel comparison of Muscat and Saiq annual mean temperature, tropical nights, and wet-bulb hours">
+    <img src="charts/stations/muscat_saiq_comparison.png" alt="Three-panel comparison of Muscat and Saiq annual mean temperature, 30°C nights, and wet-bulb hours">
     <figcaption><strong>Muscat vs Saiq.</strong> Saiq is a mountain/refuge comparator, not a controlled rural twin for Muscat. Differences mix elevation, coast, and urban context.</figcaption>
   </figure>
 
-  <h2>Diagnostics</h2>
+  <h2 id="diagnostics">Diagnostics</h2>
   <p>How we know the data is trustworthy where it claims to be, and where it isn't.</p>
 
   <figure>
@@ -746,7 +754,7 @@
 
   <figure>
     <img src="charts/diagnostics/urban_rural_compare.png" alt="Muscat (urban, coastal) vs Adam (rural, interior desert)">
-    <figcaption><strong>Urban vs rural — Muscat (coastal urban) vs Adam (interior desert, ≈170 km inland).</strong> Where the two series agree, the signal is regional climate. Where they diverge, it's local context. Both share the pre-1980 U-shape, confirming reanalysis instability rather than urban-heat-island as the dominant artifact. Tropical nights and wet-bulb hours are *only* a Muscat phenomenon (coastal humidity), not a regional one — these are the most defensible findings.</figcaption>
+    <figcaption><strong>Urban vs rural — Muscat (coastal urban) vs Adam (interior desert, ≈170 km inland).</strong> Where the two series agree, the signal is regional climate. Where they diverge, it's local context. Both share the pre-1980 U-shape, confirming reanalysis instability rather than urban-heat-island as the dominant artifact. 30°C nights and wet-bulb hours are *only* a Muscat phenomenon (coastal humidity), not a regional one — these are the most defensible findings.</figcaption>
   </figure>
 
   <footer>
@@ -1101,7 +1109,7 @@
           {
             primary: true,
             kicker: "Station catalog average",
-            title: "Tropical nights",
+            title: "30°C nights",
             value: formatMetricDelta("tropical_nights", nights.average),
             meta: nights.largest
               ? `Largest rise: ${displayStationLabel(nights.largest.station)}, ${formatMetricDelta("tropical_nights", nights.largest.delta)}.`
@@ -1141,7 +1149,7 @@
             kicker: "Coast vs mountain",
             title: "Refuge gap",
             value: signed(refugeDelta, (value) => `${value.toFixed(1)} nights`),
-            meta: "Coastal Muscat/Sohar tropical nights minus Saiq.",
+            meta: "Coastal Muscat/Sohar 30°C nights minus Saiq.",
           },
         ]);
       }

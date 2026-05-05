@@ -16,12 +16,18 @@ def test_static_site_wires_phase4_and_phase5_data():
     assert "1980-present fit window" in html
     assert "Methodology</a> — data sources" not in html
     assert "link TBD" not in html
+    assert "Code in repository (link TBD)" not in html
     assert 'href="https://github.com/"' not in html
     assert 'href="https://github.com/NasserAlbusaidi/OmanClimate"' in html
+    assert "By Nasser Albusaidi" in html
+    assert "Last updated 2026-05-05" in html
     assert 'property="og:title" content="Oman Climate Atlas"' in html
     assert 'property="og:image" content="https://nasseralbusaidi.github.io/OmanClimate/social-preview.png"' in html
     assert 'name="twitter:card" content="summary_large_image"' in html
     assert 'name="twitter:image" content="https://nasseralbusaidi.github.io/OmanClimate/social-preview.png"' in html
+    assert 'href="#diagnostics"' in html
+    assert 'id="diagnostics"' in html
+    assert 'charts/diagnostics/window_comparison.png">See the diagnostic charts below' not in html
     assert 'id="what-changed"' in html
     assert 'id="change-year-range"' in html
     assert 'id="change-station"' in html
@@ -38,6 +44,9 @@ def test_static_site_wires_phase4_and_phase5_data():
     assert 'id="story-signals"' in html
     assert "Story Leads" in html
     assert "Metric summaries, not finished story pages" not in html
+    assert "30°C nights" in html
+    assert "standard tropical-night threshold is &gt;20 °C" in html
+    assert "Tropical nights per year" not in html
     assert "Muscat / Seeb" not in html
     assert "Muscat (Seeb station)" in html
     assert 'id="sea-of-oman-sst"' in html

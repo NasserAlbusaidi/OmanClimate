@@ -183,7 +183,7 @@ def khareef_stress_story(salalah_daily: pl.DataFrame) -> dict[str, Any]:
 
 
 def mountain_refuge_story(annual: pl.DataFrame) -> dict[str, Any]:
-    """Compare Saiq tropical nights with coastal Muscat and Sohar."""
+    """Compare Saiq 30°C nights with coastal Muscat and Sohar."""
     full = annual.filter(
         (pl.col("n_days") >= MIN_DAYS_FOR_TREND) & (pl.col("year") >= TRUSTWORTHY_FIT_START)
     )
@@ -214,7 +214,7 @@ def mountain_refuge_story(annual: pl.DataFrame) -> dict[str, Any]:
         "slug": "mountain-refuge",
         "title": "The mountains: Oman's last cool refuge?",
         "station_slugs": ["saiq", "muscat", "sohar"],
-        "summary": "Saiq tropical nights compared with coastal Muscat and Sohar.",
+        "summary": "Saiq 30°C nights compared with coastal Muscat and Sohar.",
         "signal_strength": strength,
         "primary_metric": "coastal_minus_saiq_tropical_nights",
         "latest_value": summary["latest_value"],

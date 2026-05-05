@@ -636,7 +636,7 @@ window.OMAN_STATION_MAP_DATA = {
     },
     {
       "key": "tropical_nights",
-      "label": "Tropical nights",
+      "label": "30\u00b0C nights",
       "unit": "days"
     },
     {

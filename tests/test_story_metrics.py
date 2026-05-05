@@ -133,6 +133,7 @@ def test_mountain_refuge_story_compares_saiq_to_coastal_stations():
     assert story["slug"] == "mountain-refuge"
     assert story["station_slugs"] == ["saiq", "muscat", "sohar"]
     assert story["primary_metric"] == "coastal_minus_saiq_tropical_nights"
+    assert "30°C nights" in story["summary"]
     assert story["latest_value"] > 0
     assert story["series"][0] == {"year": 1980, "value": 60}
     assert "not a controlled rural twin" in story["method_note"]

@@ -24,7 +24,7 @@ PERSONAL_METRICS: tuple[dict[str, str], ...] = (
     {
         "key": "tropical_nights",
         "column": "days_overnight_low_above_30",
-        "label": "Tropical nights",
+        "label": "30°C nights",
         "unit": "days",
         "format": "integer",
     },

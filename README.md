@@ -12,7 +12,7 @@ https://nasseralbusaidi.github.io/OmanClimate/
 
 ## What This Shows
 
-- Long-term heat, tropical-night, heatwave, summer-length, and wet-bulb trends.
+- Long-term heat, 30°C-night, heatwave, summer-length, and wet-bulb trends.
 - A station comparison across Muscat, Salalah, Sohar, Sur, Nizwa, and Saiq.
 - Personal climate comparisons from a selected birth year to the latest full
   year.
@@ -35,6 +35,10 @@ early-reanalysis behavior in this region.
 | NOAA NCEI GHCN-Daily | Seeb International station observation cross-check | `data/raw/ghcn/`, `data/processed/muscat_ghcn_*.parquet` |
 | NOAA OISST v2.1 via NOAA PSL THREDDS | Sea of Oman monthly sea-surface temperature context | `data/raw/noaa-oisst/`, `data/processed/sea_of_oman_sst_*.parquet` |
 
+Local station validation is tracked in `docs/roadmap.md`. The plan is to keep
+ERA5/Open-Meteo as the atlas backbone and use Oman government station records as
+an authority check when those files are available and licensed for analysis.
+
 Raw and processed data files are ignored because they are regenerated from the
 public sources. The committed `site/` directory contains the compact static
 payload used for GitHub Pages.
@@ -45,6 +49,7 @@ payload used for GitHub Pages.
 pipeline/              Fetching, processing, analysis, diagnostics, and charting
 tests/                 Pytest coverage for data processing, analysis, CLI, and site outputs
 docs/methodology.md    Detailed methodology, caveats, thresholds, and changelog
+docs/roadmap.md        Planned local station validation and story-page work
 site/                  Static atlas artifact published by GitHub Pages
 notebooks/             Exploratory source-comparison scripts
 data/                  Local regenerated caches and parquet outputs
@@ -109,6 +114,10 @@ The detailed methodology lives in `docs/methodology.md`. It documents:
 - station roles and urban-heat-island caveats,
 - GHCN and OISST source handling,
 - current limitations and future cross-checks.
+
+The public roadmap lives in `docs/roadmap.md`. It includes local station
+validation against Oman Civil Aviation Authority records as the next evidence
+upgrade.
 
 ## Deployment
 

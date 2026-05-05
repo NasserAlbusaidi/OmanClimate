@@ -56,6 +56,8 @@ def test_station_map_data_summarizes_latest_values_and_trends(tmp_path: Path):
 
     assert data["fit_start_year"] == 1980
     assert data["min_days_for_trend"] == 360
+    nights_metric = next(metric for metric in data["metrics"] if metric["key"] == "tropical_nights")
+    assert nights_metric["label"] == "30°C nights"
     assert data["map"]["source"] == "Natural Earth via datasets/geo-countries"
     assert data["map"]["geometry_type"] == "MultiPolygon"
     assert len(data["map"]["rings"]) >= 4

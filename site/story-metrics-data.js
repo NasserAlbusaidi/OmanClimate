@@ -203,7 +203,7 @@ window.OMAN_STORY_METRICS_DATA = {
         "muscat",
         "sohar"
       ],
-      "summary": "Saiq tropical nights compared with coastal Muscat and Sohar.",
+      "summary": "Saiq 30\u00b0C nights compared with coastal Muscat and Sohar.",
       "title": "The mountains: Oman's last cool refuge?",
       "trend": "increasing"
     },
