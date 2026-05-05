@@ -30,6 +30,7 @@ from pipeline.process.sst import process_sst
 from pipeline.process.stations import process_stations
 from pipeline.stations import STATIONS
 from pipeline.viz.personal_climate import write_personal_climate_data
+from pipeline.viz.social_preview import render_social_preview
 from pipeline.viz.sst import write_sst_data
 from pipeline.viz.station_map import write_station_map_data
 from pipeline.viz.stations import render_all as render_all_station_charts
@@ -142,6 +143,9 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     sstd.add_argument("--station-annual", type=Path, default=DEFAULT_STATION_ANNUAL)
     sstd.add_argument("--salalah-daily", type=Path, default=DEFAULT_SALALAH_STATION_DAILY)
     sstd.add_argument("--out", type=Path, default=Path("site/sst-data.js"))
+
+    sp = sub.add_parser("social-preview", help="Render the static social preview PNG")
+    sp.add_argument("--out", type=Path, default=Path("site/social-preview.png"))
 
     dg = sub.add_parser(
         "diagnose",
@@ -378,6 +382,12 @@ def cmd_sst_data(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_social_preview(args: argparse.Namespace) -> int:
+    path = render_social_preview(args.out)
+    logging.getLogger("pipeline").info("wrote social preview image to %s", path)
+    return 0
+
+
 def cmd_diagnose(args: argparse.Namespace) -> int:
     log = logging.getLogger("pipeline")
     if not args.annual.exists():
@@ -461,6 +471,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_process_sst(args)
     if args.cmd == "sst-data":
         return cmd_sst_data(args)
+    if args.cmd == "social-preview":
+        return cmd_social_preview(args)
     if args.cmd == "diagnose":
         return cmd_diagnose(args)
     return 1

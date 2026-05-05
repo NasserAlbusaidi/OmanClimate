@@ -12,6 +12,12 @@ import polars as pl
 from pipeline.analysis.trends import mann_kendall, ols_with_ci
 from pipeline.stations import STATIONS
 from pipeline.viz._common import MIN_DAYS_FOR_TREND, TRUSTWORTHY_FIT_START
+from pipeline.viz.oman_outline import (
+    OMAN_OUTLINE_GEOMETRY_TYPE,
+    OMAN_OUTLINE_RINGS,
+    OMAN_OUTLINE_SOURCE,
+    outline_bounds,
+)
 
 
 MAP_METRICS: tuple[dict[str, str], ...] = (
@@ -107,17 +113,14 @@ def build_station_map_data(annual_parquet: Path) -> dict[str, Any]:
         .filter(pl.col("n_days") >= MIN_DAYS_FOR_TREND)
         .sort(["station_slug", "year"])
     )
-    latitudes = [station.latitude for station in STATIONS]
-    longitudes = [station.longitude for station in STATIONS]
-
     return {
         "fit_start_year": TRUSTWORTHY_FIT_START,
         "min_days_for_trend": MIN_DAYS_FOR_TREND,
-        "bounds": {
-            "latitude_min": min(latitudes),
-            "latitude_max": max(latitudes),
-            "longitude_min": min(longitudes),
-            "longitude_max": max(longitudes),
+        "bounds": outline_bounds(),
+        "map": {
+            "source": OMAN_OUTLINE_SOURCE,
+            "geometry_type": OMAN_OUTLINE_GEOMETRY_TYPE,
+            "rings": OMAN_OUTLINE_RINGS,
         },
         "metrics": [
             {

@@ -1,4 +1,4 @@
-.PHONY: install fetch fetch-stations fetch-ghcn fetch-sst process process-stations process-ghcn process-sst process-all charts phase3-charts station-map-data personal-climate-data story-metrics-data sst-data diagnostics site test all clean
+.PHONY: install fetch fetch-stations fetch-ghcn fetch-sst process process-stations process-ghcn process-sst process-all charts phase3-charts station-map-data personal-climate-data story-metrics-data sst-data social-preview diagnostics site test all clean
 
 install:
 	uv sync --all-extras
@@ -47,10 +47,13 @@ story-metrics-data:
 sst-data:
 	uv run python -m pipeline.cli sst-data --out site/sst-data.js
 
+social-preview:
+	uv run python -m pipeline.cli social-preview --out site/social-preview.png
+
 diagnostics:
 	uv run python -m pipeline.cli diagnose --with-rural --out charts/diagnostics
 
-site: charts phase3-charts station-map-data personal-climate-data story-metrics-data sst-data diagnostics
+site: charts phase3-charts station-map-data personal-climate-data story-metrics-data sst-data social-preview diagnostics
 	mkdir -p site/charts site/charts/diagnostics
 	cp charts/*.png site/charts/
 	cp charts/diagnostics/*.png site/charts/diagnostics/
@@ -66,4 +69,4 @@ clean:
 		data/processed/*.parquet data/processed/stations/*.parquet data/processed/sea_of_oman_sst_monthly.parquet data/processed/sea_of_oman_sst_annual.parquet \
 		charts/*.png charts/diagnostics/*.png charts/stations/*.png \
 		site/charts/*.png site/charts/diagnostics/*.png site/charts/stations/*.png \
-		site/station-map-data.js site/personal-climate-data.js site/story-metrics-data.js site/sst-data.js
+		site/station-map-data.js site/personal-climate-data.js site/story-metrics-data.js site/sst-data.js site/social-preview.png

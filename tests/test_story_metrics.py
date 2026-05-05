@@ -113,6 +113,7 @@ def test_december_cool_snap_story_uses_daily_december_metrics():
     assert story["station_slugs"] == ["muscat"]
     assert story["primary_metric"] == "december_cool_days"
     assert story["latest_value"] < story["baseline_value"]
+    assert story["series"][0] == {"year": 1980, "value": 31}
     assert "daily station parquet" in story["method_note"]
 
 
@@ -123,6 +124,7 @@ def test_khareef_story_uses_salalah_june_to_september_wetbulb_hours():
     assert story["station_slugs"] == ["salalah"]
     assert story["primary_metric"] == "khareef_wetbulb_hours"
     assert story["latest_value"] > story["baseline_value"]
+    assert story["series"][0] == {"year": 1980, "value": 0}
 
 
 def test_mountain_refuge_story_compares_saiq_to_coastal_stations():
@@ -132,6 +134,7 @@ def test_mountain_refuge_story_compares_saiq_to_coastal_stations():
     assert story["station_slugs"] == ["saiq", "muscat", "sohar"]
     assert story["primary_metric"] == "coastal_minus_saiq_tropical_nights"
     assert story["latest_value"] > 0
+    assert story["series"][0] == {"year": 1980, "value": 60}
     assert "not a controlled rural twin" in story["method_note"]
 
 

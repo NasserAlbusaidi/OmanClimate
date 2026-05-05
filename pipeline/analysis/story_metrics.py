@@ -83,6 +83,14 @@ def _window_summary(frame: pl.DataFrame, metric: str) -> dict[str, float | int |
     }
 
 
+def _metric_series(frame: pl.DataFrame, metric: str) -> list[dict[str, float | int | None]]:
+    """Return compact year/value pairs for browser-side selected-year deltas."""
+    return [
+        {"year": int(row["year"]), "value": _json_number(row[metric])}
+        for row in frame.select(["year", metric]).sort("year").to_dicts()
+    ]
+
+
 def december_cool_snap_story(muscat_daily: pl.DataFrame) -> dict[str, Any]:
     """Summarize December cool-day loss at Muscat."""
     df = (
@@ -121,6 +129,7 @@ def december_cool_snap_story(muscat_daily: pl.DataFrame) -> dict[str, Any]:
         "baseline_value": summary["baseline_value"],
         "delta": summary["delta"],
         "delta_percent": summary["delta_percent"],
+        "series": _metric_series(df, "december_cool_days"),
         "trend": summary["trend"],
         "p_value": summary["p_value"],
         "method_note": "Uses Muscat daily station parquet; December cool day means temp_high < 25 deg C.",
@@ -166,6 +175,7 @@ def khareef_stress_story(salalah_daily: pl.DataFrame) -> dict[str, Any]:
         "baseline_value": summary["baseline_value"],
         "delta": summary["delta"],
         "delta_percent": summary["delta_percent"],
+        "series": _metric_series(df, "khareef_wetbulb_hours"),
         "trend": summary["trend"],
         "p_value": summary["p_value"],
         "method_note": "Uses Salalah daily station parquet; khareef window is June 1 through September 30.",
@@ -211,6 +221,7 @@ def mountain_refuge_story(annual: pl.DataFrame) -> dict[str, Any]:
         "baseline_value": summary["baseline_value"],
         "delta": summary["delta"],
         "delta_percent": summary["delta_percent"],
+        "series": _metric_series(comparison, "coastal_minus_saiq_tropical_nights"),
         "trend": summary["trend"],
         "p_value": summary["p_value"],
         "method_note": "Saiq is a mountain/refuge comparator, not a controlled rural twin for Muscat.",

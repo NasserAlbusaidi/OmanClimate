@@ -56,6 +56,14 @@ def test_station_map_data_summarizes_latest_values_and_trends(tmp_path: Path):
 
     assert data["fit_start_year"] == 1980
     assert data["min_days_for_trend"] == 360
+    assert data["map"]["source"] == "Natural Earth via datasets/geo-countries"
+    assert data["map"]["geometry_type"] == "MultiPolygon"
+    assert len(data["map"]["rings"]) >= 4
+    assert sum(len(ring) for ring in data["map"]["rings"]) > 100
+    assert data["bounds"]["latitude_min"] < min(station.latitude for station in STATIONS)
+    assert data["bounds"]["latitude_max"] > max(station.latitude for station in STATIONS)
+    assert data["bounds"]["longitude_min"] < min(station.longitude for station in STATIONS)
+    assert data["bounds"]["longitude_max"] > max(station.longitude for station in STATIONS)
     assert [station["slug"] for station in data["stations"]] == [
         station.slug for station in STATIONS
     ]
@@ -91,4 +99,6 @@ def test_static_site_wires_station_map_data():
 
     assert 'src="station-map-data.js"' in html
     assert 'id="station-map"' in html
+    assert 'id="oman-map-outline"' in html
+    assert "renderCountryOutline" in html
     assert "OMAN_STATION_MAP_DATA" in html
