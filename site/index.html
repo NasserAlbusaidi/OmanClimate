@@ -355,12 +355,6 @@
     margin-top: 0.15rem;
     font-size: 0.92rem;
   }
-  .station-change-title {
-    margin: 1rem 0 0.6rem;
-    font-size: 1rem;
-    letter-spacing: 0;
-  }
-
   .atlas-section {
     margin-top: 3rem;
     padding-top: 1.5rem;
@@ -597,9 +591,9 @@
   <section class="atlas-section change-hero" id="what-changed" aria-labelledby="what-changed-title">
     <div class="change-shell">
       <div class="change-copy">
-        <p class="detail-kicker">Station-catalog headlines</p>
-        <h2 id="what-changed-title">What changed since <span id="change-title-year">1995</span>?</h2>
-        <p class="lead">A selected-year comparison across the six-station atlas, with Sea of Oman and story-signal context kept separate from station averages.</p>
+        <p class="detail-kicker">Selected-station headlines</p>
+        <h2 id="what-changed-title">What changed in <span id="change-title-station">Muscat</span> since <span id="change-title-year">1995</span>?</h2>
+        <p class="lead">The headline cards follow the focus station. The six-station chart stays below as context, so city changes are visible immediately without duplicating Personal Climate.</p>
       </div>
       <div class="control-panel change-controls">
         <div>
@@ -635,9 +629,6 @@
       </div>
       <aside class="quality-console" id="quality-console" aria-live="polite"></aside>
     </div>
-
-    <h3 class="station-change-title">Selected station</h3>
-    <div id="station-change-cards" class="signal-grid" aria-live="polite"></div>
   </section>
 
   <section class="atlas-section" aria-labelledby="station-atlas-title">
@@ -1075,61 +1066,60 @@
         `).join("");
       }
 
-      function renderOmanHeadlines(startYear) {
-        const temp = summarizeDeltas("temp_mean_c", startYear);
-        const nights = summarizeDeltas("tropical_nights", startYear);
+      function renderStationHeadlines(startYear, stationSlug) {
+        const station = stationBySlug(stationSlug);
+        if (!station) return;
+        const tempDelta = metricDelta(station, "temp_mean_c", startYear);
+        const nightsDelta = metricDelta(station, "tropical_nights", startYear);
+        const wetbulbDelta = metricDelta(station, "wetbulb_hours_above_28", startYear);
+        const summerDelta = metricDelta(station, "summer_length_days", startYear);
+        const severeDelta = metricDelta(station, "severe_heatwaves", startYear);
         const wetbulb = summarizeDeltas("wetbulb_hours_above_28", startYear);
-        const summer = summarizeDeltas("summer_length_days", startYear);
         const sstStart = sstRowForYear(Math.max(startYear, sstData?.annual_start_year || startYear));
         const sstLatest = sstData?.years?.at(-1);
         const sstDelta = Number.isFinite(sstStart?.sst_mean) && Number.isFinite(sstLatest?.sst_mean)
           ? sstLatest.sst_mean - sstStart.sst_mean
           : null;
-        const december = storyBySlug("december-cool-snap");
-        const decemberStart = storySeriesValue(december, startYear);
-        const decemberDelta = Number.isFinite(decemberStart) && Number.isFinite(storyLatestValue(december))
-          ? storyLatestValue(december) - decemberStart
-          : null;
-        const refuge = storyBySlug("mountain-refuge");
-        const refugeStart = storySeriesValue(refuge, startYear);
-        const refugeDelta = Number.isFinite(refugeStart) && Number.isFinite(storyLatestValue(refuge))
-          ? storyLatestValue(refuge) - refugeStart
-          : null;
+        const stationLabel = displayStationLabel(station);
+        const metricMeta = (metricKey) => {
+          const metric = getPersonalMetric(metricKey);
+          const start = metricValue(station, metricKey, startYear);
+          const latest = metricValue(station, metricKey, personalData.latest_year);
+          return `${stationLabel}: ${personalFormat(metric, start)} in ${startYear} -> ${personalFormat(metric, latest)} in ${personalData.latest_year}.`;
+        };
 
         renderHeadlineCards([
           {
             primary: true,
-            kicker: "Station catalog average",
+            kicker: "Focus station",
             title: "Mean temperature",
-            value: formatMetricDelta("temp_mean_c", temp.average),
-            meta: temp.largest
-              ? `Largest station change: ${displayStationLabel(temp.largest.station)}, ${formatMetricDelta("temp_mean_c", temp.largest.delta)}.`
-              : "No station comparison available.",
+            value: formatMetricDelta("temp_mean_c", tempDelta),
+            meta: metricMeta("temp_mean_c"),
           },
           {
             primary: true,
-            kicker: "Station catalog average",
+            kicker: "Focus station",
             title: "30°C nights",
-            value: formatMetricDelta("tropical_nights", nights.average),
-            meta: nights.largest
-              ? `Largest rise: ${displayStationLabel(nights.largest.station)}, ${formatMetricDelta("tropical_nights", nights.largest.delta)}.`
-              : "No station comparison available.",
+            value: formatMetricDelta("tropical_nights", nightsDelta),
+            meta: metricMeta("tropical_nights"),
           },
           {
-            kicker: "Largest station jump",
+            kicker: "Focus station",
             title: "Wet-bulb danger hours",
-            value: wetbulb.largest ? formatMetricDelta("wetbulb_hours_above_28", wetbulb.largest.delta) : "n/a",
-            meta: wetbulb.largest
-              ? `${displayStationLabel(wetbulb.largest.station)}; catalog average ${formatMetricDelta("wetbulb_hours_above_28", wetbulb.average)}.`
-              : "No station comparison available.",
+            value: formatMetricDelta("wetbulb_hours_above_28", wetbulbDelta),
+            meta: metricMeta("wetbulb_hours_above_28"),
           },
           {
-            kicker: "Station catalog average",
+            kicker: "Focus station",
             title: "Longest summer run",
-            value: formatMetricDelta("summer_length_days", summer.average),
-            meta: summer.largest
-              ? `Largest station change: ${displayStationLabel(summer.largest.station)}, ${formatMetricDelta("summer_length_days", summer.largest.delta)}.`
-              : "No station comparison available.",
+            value: formatMetricDelta("summer_length_days", summerDelta),
+            meta: metricMeta("summer_length_days"),
+          },
+          {
+            kicker: "Focus station",
+            title: "Severe heatwaves",
+            value: formatMetricDelta("severe_heatwaves", severeDelta),
+            meta: metricMeta("severe_heatwaves"),
           },
           {
             kicker: "Sea of Oman",
@@ -1140,38 +1130,14 @@
               : "No SST comparison available.",
           },
           {
-            kicker: "Muscat December",
-            title: "Cool days",
-            value: signed(decemberDelta, (value) => `${Math.round(value).toLocaleString()} days`),
-            meta: "Days with December high below 25 deg C.",
-          },
-          {
-            kicker: "Coast vs mountain",
-            title: "Refuge gap",
-            value: signed(refugeDelta, (value) => `${value.toFixed(1)} nights`),
-            meta: "Coastal Muscat/Sohar 30°C nights minus Saiq.",
+            kicker: "Catalog context",
+            title: "Largest wet-bulb jump",
+            value: wetbulb.largest ? formatMetricDelta("wetbulb_hours_above_28", wetbulb.largest.delta) : "n/a",
+            meta: wetbulb.largest
+              ? `${displayStationLabel(wetbulb.largest.station)} has the largest catalog change since ${startYear}.`
+              : "No station comparison available.",
           },
         ]);
-      }
-
-      function renderStationChangeCards(startYear, stationSlug) {
-        const title = document.querySelector(".station-change-title");
-        const container = document.getElementById("station-change-cards");
-        const station = stationBySlug(stationSlug);
-        if (!container || !station) return;
-        if (title) title.textContent = `Selected station: ${displayStationLabel(station)}`;
-        container.innerHTML = personalData.metrics.map((metric) => {
-          const start = metricValue(station, metric.key, startYear);
-          const latest = metricValue(station, metric.key, personalData.latest_year);
-          const delta = Number.isFinite(start) && Number.isFinite(latest) ? latest - start : null;
-          return `
-            <article class="signal-card">
-              <h3>${metric.label}</h3>
-              <span class="signal-value">${formatMetricDelta(metric.key, delta)}</span>
-              <p class="detail-meta">${personalFormat(metric, start)} in ${startYear} -> ${personalFormat(metric, latest)} in ${personalData.latest_year}</p>
-            </article>
-          `;
-        }).join("");
       }
 
       function renderQualityConsole(startYear, stationSlug) {
@@ -1203,7 +1169,7 @@
         `;
       }
 
-      function renderChangeChart(startYear) {
+      function renderChangeChart(startYear, focusSlug) {
         const chart = document.getElementById("change-comparison-chart");
         const tooltip = document.getElementById("change-chart-tooltip");
         if (!chart || !personalData) return;
@@ -1275,11 +1241,17 @@
 
         stationRows.forEach((row) => {
           const color = changeSeriesColors[row.station.slug] || "#151a1f";
+          const isFocus = row.station.slug === focusSlug;
           const path = row.points.map((point, index) => {
             const prefix = index === 0 ? "M" : "L";
             return `${prefix}${xScale(point.year).toFixed(1)},${yScale(point.delta).toFixed(1)}`;
           }).join(" ");
-          chart.append(svgEl("path", { class: "chart-series", d: path, stroke: color }));
+          chart.append(svgEl("path", {
+            class: "chart-series",
+            d: path,
+            stroke: color,
+            style: `stroke-width:${isFocus ? 4.2 : 1.8};opacity:${isFocus ? 1 : 0.45}`,
+          }));
           const last = row.points.at(-1);
           chart.append(svgEl("text", {
             class: "chart-label",
@@ -1362,8 +1334,9 @@
         const yearInput = document.getElementById("change-year-input");
         const stationSelect = document.getElementById("change-station");
         const titleYear = document.getElementById("change-title-year");
+        const changeTitleStation = document.getElementById("change-title-station");
         const metricButtons = Array.from(document.querySelectorAll("[data-change-metric]"));
-        if (!yearRange || !yearInput || !stationSelect || !titleYear) return;
+        if (!yearRange || !yearInput || !stationSelect || !titleYear || !changeTitleStation) return;
 
         stationSelect.innerHTML = personalData.stations.map((station) =>
           `<option value="${station.slug}">${displayStationLabel(station)}</option>`
@@ -1394,11 +1367,12 @@
           yearInput.value = year;
           yearRange.value = year;
           titleYear.textContent = String(year);
+          const station = stationBySlug(stationSelect.value);
+          changeTitleStation.textContent = displayStationLabel(station);
           setMetricButtonState();
-          renderOmanHeadlines(year);
-          renderStationChangeCards(year, stationSelect.value);
+          renderStationHeadlines(year, stationSelect.value);
           renderQualityConsole(year, stationSelect.value);
-          renderChangeChart(year);
+          renderChangeChart(year, stationSelect.value);
         }
 
         yearRange.addEventListener("input", () => {

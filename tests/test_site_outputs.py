@@ -31,12 +31,21 @@ def test_static_site_wires_phase4_and_phase5_data():
     assert 'id="what-changed"' in html
     assert 'id="change-year-range"' in html
     assert 'id="change-station"' in html
+    assert 'id="change-title-station"' in html
     assert 'id="oman-headline-cards"' in html
-    assert 'id="station-change-cards"' in html
+    assert 'id="station-change-cards"' not in html
     assert 'id="change-comparison-chart"' in html
     assert 'id="quality-console"' in html
     assert "initWhatChangedHero" in html
-    assert "renderChangeChart" in html
+    assert "renderStationHeadlines(year, stationSelect.value)" in html
+    assert "function renderStationHeadlines(startYear, stationSlug)" in html
+    assert "changeTitleStation.textContent = displayStationLabel(station)" in html
+    assert 'metricDelta(station, "temp_mean_c", startYear)' in html
+    assert "renderOmanHeadlines(year)" not in html
+    assert "renderStationChangeCards" not in html
+    assert "renderChangeChart(year, stationSelect.value)" in html
+    assert "function renderChangeChart(startYear, focusSlug)" in html
+    assert "row.station.slug === focusSlug" in html
     assert 'src="personal-climate-data.js"' in html
     assert 'src="story-metrics-data.js"' in html
     assert 'src="sst-data.js"' in html
